@@ -9,6 +9,8 @@ def requestTemplate(value : str, a : int) -> int:
 	:param str value: строка
 	:param int a: число
 	:return int:
+
+	такая нотация называется reStructuredText docstring
 	'''
 	print(f"Был вызван requestTemplate с аргументом {value}")
 	return a

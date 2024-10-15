@@ -1,3 +1,3 @@
 from apiRequests import requestTemplate
 
-requestTemplate("123")
+requestTemplate("123", 1)
