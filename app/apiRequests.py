@@ -2,16 +2,14 @@
 # Пиши сюда запросы в следущем виде:
 
 def requestTemplate(value : str, a : int) -> int:
-	'''
-	тут пиши вот так что должен делать запрос, в каком случае вызывается
-	и что возвращает в формате
+	"""	тут пиши docstring в таком формате. Их можно генерировать автоматически с помощью дополения autoDocstring в VSCode
+	Args:
+		value (str): _description_
+		a (int): _description_
 
-	:param str value: строка
-	:param int a: число
-	:return int:
-
-	такая нотация называется reStructuredText docstring
-	'''
+	Returns:
+		int: _description_
+	"""
 	print(f"Был вызван requestTemplate с аргументом {value}")
 	return a
 
