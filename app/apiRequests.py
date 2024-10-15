@@ -1,16 +1,17 @@
 # В этом файле будут все запросы от тг бота к бэкенду на FastAPI
 # Пиши сюда запросы в следущем виде:
 
-def requestTemplate(value : str) -> int:
+def requestTemplate(value : str, a : int) -> int:
 	'''
 	тут пиши вот так что должен делать запрос, в каком случае вызывается
 	и что возвращает в формате
-	objectName : objectType
-	string : str
-	value : int
+
+	:param str value: строка
+	:param int a: число
+	:return int:
 	'''
 	print(f"Был вызван requestTemplate с аргументом {value}")
-	return 0
+	return a
 
 # В последующем я буду реализовывать все запросы, которые ты сюда напишешь 
 # Имя функции должно отражать её суть, напр getHistoryPage() - запрос на получение страницы истории транзакций

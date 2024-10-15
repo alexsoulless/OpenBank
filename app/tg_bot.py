@@ -4,4 +4,4 @@
 from apiRequests import *
 from config import *
 
-requestTemplate("help")
+requestTemplate("help", 1)
