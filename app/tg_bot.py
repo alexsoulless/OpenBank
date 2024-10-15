@@ -1,7 +1,7 @@
 # Тут пиши тг бота. В api пиши запросы, которые понадобятся для реализации функционала бота
-# В config.py все 
+# В config.py все
 
-from app.api.api import requestTemplate 
-import app.config
+from apiRequests import *
+from config import *
 
-requestTemplate("fuck")
+requestTemplate("help")

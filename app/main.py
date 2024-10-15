@@ -1,3 +1,3 @@
-from app.api.api import calc
+from apiRequests import requestTemplate
 
-calc(2, 3)
+requestTemplate("123")

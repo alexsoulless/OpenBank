@@ -3,9 +3,11 @@
 
 def requestTemplate(value : str) -> int:
 	'''
-	тут пиши что должен делать запрос, в каком случае вызывается
+	тут пиши вот так что должен делать запрос, в каком случае вызывается
 	и что возвращает в формате
 	objectName : objectType
+	string : str
+	value : int
 	'''
 	print(f"Был вызван requestTemplate с аргументом {value}")
 	return 0
