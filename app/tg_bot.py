@@ -1,7 +1,7 @@
 # Тут пиши тг бота. В api пиши запросы, которые понадобятся для реализации функционала бота
 # В config.py все
 
-import apiRequests as AR
+import apiRequests as ar
 from config import *
 
-AR.requestTemplate("help", 1)
+ar.requestTemplate("help", 1)

@@ -1,3 +1,4 @@
-from apiRequests import requestTemplate
+import apiRequests as ar
+import database.dbRequests as dbr
 
-requestTemplate("123", 1)
+ar.requestTemplate("123", 1)
