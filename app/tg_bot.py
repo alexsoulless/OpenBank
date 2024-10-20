@@ -5,3 +5,4 @@ import apiRequests as ar
 from config import *
 
 ar.requestTemplate("help", 1)
+
