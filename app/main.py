@@ -1,30 +1,38 @@
-import app.dbRequests as dbr
-from typing import Union
+# from typing import Union
+# from pydantic import BaseModel
 from fastapi import FastAPI
-from pydantic import BaseModel
+from contextlib import asynccontextmanager
+import dbRequests as dbr
+from OBclasses import *
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Жизненный цикл приложения. Всё до yield выполняется при запуске программы, всё что после - при завершении работы
+    print("===APP SETUP===")
+    global pool
+    pool = dbr.connectionPool()
+    if pool is None:
+        print("db connection - failed")
+    print("db connection - success")
+    yield
+    print("bye-bye")
 
 
-class Item(BaseModel):
-    name: str
-    price: float
-    is_offer: Union[bool, None] = None
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/ping/")
-def ping(q : str):
+def ping(q : int):
     return {
         "responce": "pong",
-        "q": q
+        "q" : q
     }
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
-
-
-@app.put("/items/{item_id}")
-def update_item(item_id: int, item: Item):
-    return {"item_name": item.name, "item_id": item_id}
+@app.get("/getUser/")
+async def getUser(
+    id: int | None = None, username: str | None = None, FIO: str | None = None
+):
+    global pool
+    return dbr.getUser(pool, id, username, FIO)

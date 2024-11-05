@@ -2,10 +2,23 @@ import mysql.connector
 from mysql.connector import pooling
 import mysql.connector.cursor
 from config import DB_PASSWORD, DB_USER, DB_HOST, DB_NAME, DB_PORT
-from OBclasses import User
+from OBclasses import *
+
+
+def connectToDB()-> bool:
+    global pool
+    pool = connectionPool()
+    if pool is not None:
+        return True
+    return False
 
 
 def connectionPool() -> pooling.MySQLConnectionPool | None:
+    """Создание пула подключений
+
+    Returns:
+        pooling.MySQLConnectionPool | None: возвращает пул подклчений, либо None если возникли ошибки
+    """
     db_config = {
         "host": DB_HOST,
         "user": DB_USER,
@@ -39,11 +52,11 @@ def getCursor(conn: pooling.PooledMySQLConnection) -> mysql.connector.cursor:
 
 def getUser(
     pool: pooling.MySQLConnectionPool,
-    id: int | None = None,
+    id: UserID | None = None,
     username: str | None = None,
     FIO: str | None = None,
 ) -> dict | None:
-    """Возвращает всю информацию о пользователе по id или username или ФИО. ВАЖНО! Использовать только с 1 из критериев отбора. 
+    """Возвращает всю информацию о пользователе по id или username или ФИО. ВАЖНО! Использовать только с 1 из критериев отбора.
 
     Args:
         pool (pooling.MySQLConnectionPool): пул соединений
@@ -62,12 +75,11 @@ def getUser(
             "isOrg": isOrg
         }
         Если пользователя не нашлось, словарь пустой.
-        
+
         При ошибке выполнения функции возвращает None (напр. передано несколько критериев)
-    """    
+    """
     if [id, username, FIO].count(None) != 2:
         return None
-
     conn = getConnection(pool)
     cursor = getCursor(conn)
 
@@ -104,7 +116,7 @@ WHERE {} = {}
         }
     else:
         return {}
-
+    
 
 if __name__ == "__main__":
     pool = connectionPool()
@@ -112,4 +124,4 @@ if __name__ == "__main__":
         print("error on db connect")
         exit(1)
 
-    print(getUser(pool, FIO="Абрамович Александр Владимирович"))
+    print(getUser(FIO="Абрамович Александр Владимирович"))
