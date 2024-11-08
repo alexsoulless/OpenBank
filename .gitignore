@@ -1,5 +1,0 @@
-.venv
-app/__pycache__
-tips.txt
-app/.env
-.gitignore
