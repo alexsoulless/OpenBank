@@ -23,10 +23,9 @@ app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/ping/")
-def ping(q : int):
+def ping():
     return {
         "responce": "pong",
-        "q" : q
     }
 
 

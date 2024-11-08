@@ -21,19 +21,26 @@ def requestTemplate(value : str, a : int) -> int:
 # Имя функции должно отражать её суть, напр getHistoryPage() - запрос на получение страницы истории транзакций
 
 
-class reqType:
-	getUser = "getUser/"
+class ReqType:
 	ping = "ping/"
 
+class getReqType(ReqType):
+	getUser = "getUser/"
+
+class postReqType(
+	ReqType
+):
+	pass
+
 def _baseGetRequest(
-		type : reqType | None, 
+		type : getReqType | None, 
 		params : dict | None
 		) -> dict:
 	reqRes = rq.get(config.API_PATH + type, params)
 	return json.loads(reqRes.content)
 
 def pingReq(q : int) -> dict:
-	return _baseGetRequest(reqType.ping, {"q" : q})
+	return _baseGetRequest(getReqType.ping)
 
 def getUserReq(
 		id: int | None = None,
@@ -61,7 +68,7 @@ def getUserReq(
 		{}
         При ошибке выполнения функции возвращает None (напр. передано несколько критериев)
     """
-	return _baseGetRequest(reqType.getUser,{
+	return _baseGetRequest(getReqType.getUser,{
 		"id": id,
 		"username": username,
 		"FIO": FIO,

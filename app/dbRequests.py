@@ -2,7 +2,7 @@ import mysql.connector
 from mysql.connector import pooling
 import mysql.connector.cursor
 from config import DB_PASSWORD, DB_USER, DB_HOST, DB_NAME, DB_PORT
-from OBclasses import *
+from OBclasses import UserID
 
 
 def connectToDB()-> bool:
@@ -39,7 +39,7 @@ def getConnection(pool: pooling.MySQLConnectionPool) -> pooling.PooledMySQLConne
 
 
 def getCursor(conn: pooling.PooledMySQLConnection) -> mysql.connector.cursor:
-    """Возвращает курсор. Курсор буферизирванный, извлакать данные нужно как из генератора/итератора
+    """Возвращает курсор. Курсор буферизирванный, извлекать данные нужно как из генератора/итератора
 
     Args:
         conn (pooling.PooledMySQLConnection): соединение
@@ -120,8 +120,8 @@ WHERE {} = {}
 
 if __name__ == "__main__":
     pool = connectionPool()
-    if pool == None:
+    if pool is None:
         print("error on db connect")
         exit(1)
 
-    print(getUser(FIO="Абрамович Александр Владимирович"))
+    print(getUser(pool, FIO="Абрамович Александр Владимирович"))
