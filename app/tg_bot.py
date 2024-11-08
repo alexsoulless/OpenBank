@@ -2,7 +2,7 @@
 # В config.py все
 
 import apiRequests as ar
-from config import *
+from config import TELEGRAM_API_KEY
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, Filters, CallbackQueryHandler
 
@@ -126,7 +126,7 @@ def admin_button_handler(update: Update, context: CallbackContext):
         query.edit_message_text(text="test_я в рот ебла пока не ебу как все подключить")
 
 def main():
-    updater = Updater(token=''7675020905:AAHaqf7EJqA2FUlIBQU_cD76tMeu-exHLuM'', use_context=True)
+    updater = Updater(token=TELEGRAM_API_KEY, use_context=True)
     
     dp = updater.dispatcher
     
