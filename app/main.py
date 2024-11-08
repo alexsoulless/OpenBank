@@ -1,9 +1,6 @@
-# from typing import Union
-# from pydantic import BaseModel
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 import dbRequests as dbr
-from OBclasses import *
 
 
 @asynccontextmanager
