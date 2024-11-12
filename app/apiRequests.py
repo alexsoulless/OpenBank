@@ -1,7 +1,7 @@
 import config
 import requests as rq
 import json
-from classes import User, Transaction, Currency
+from classes import User, Transaction, Currency, Tax
 
 # В этом файле будут все запросы от тг бота к бэкенду на FastAPI
 # Пиши сюда запросы в следущем виде:
@@ -118,6 +118,14 @@ def getTransactionsPage(username: str, i: int) -> tuple[Transaction] | None:
     """
     pass
 
+
+def getTaxes() -> Tax | None:
+    """Возвращает всю информацию о существующих налогах.
+
+    Returns:
+        Tax | None: налог, если запрос успешен, иначе None
+    """
+    pass
 
 if __name__ == "__main__":
     print(getUser(username="AlexSsoulless"))
