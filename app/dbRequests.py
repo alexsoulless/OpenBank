@@ -2,7 +2,7 @@ import mysql.connector
 from mysql.connector import pooling
 import mysql.connector.cursor
 from config import DB_PASSWORD, DB_USER, DB_HOST, DB_NAME, DB_PORT
-from OBclasses import UserID
+from classes import User, Transaction, Tax, TaxPayment, Currency, 
 
 
 def connectToDB()-> bool:
@@ -53,7 +53,7 @@ def getCursor(conn: pooling.PooledMySQLConnection) -> mysql.connector.cursor:
 
 def getUser(
     pool: pooling.MySQLConnectionPool,
-    id: UserID | None = None,
+    id: int | None = None,
     username: str | None = None,
     FIO: str | None = None,
 ) -> dict | None:
