@@ -24,6 +24,7 @@ def connectionPool() -> pooling.MySQLConnectionPool | None:
         "user": DB_USER,
         "password": DB_PASSWORD,
         "database": DB_NAME,
+        "port" : DB_PORT
     }
     try:
         connection_pool = pooling.MySQLConnectionPool(
@@ -124,4 +125,9 @@ if __name__ == "__main__":
         print("error on db connect")
         exit(1)
 
-    print(getUser(pool, FIO="Абрамович Александр Владимирович"))
+    res = ""
+    try:
+        res = getUser(pool, FIO="Абрамович Александр Владимирович")
+    except Exception as e:
+        print(e)
+    print(res)

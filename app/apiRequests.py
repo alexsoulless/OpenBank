@@ -42,7 +42,7 @@ def _baseGetRequest(
 def pingReq(q : int) -> dict:
 	return _baseGetRequest(getReqType.ping)
 
-def getUserReq(
+def getUser(
 		id: int | None = None,
 		username: str | None = None,
 		FIO: str | None = None,
@@ -75,4 +75,4 @@ def getUserReq(
 	})
 
 if __name__ == "__main__":
-	print(getUserReq(username="AlexSsoulless"))
+	print(getUser(username="AlexSsoulless"))
