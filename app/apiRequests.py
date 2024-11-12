@@ -36,8 +36,11 @@ class postReqType(ReqType):
     pass
 
 
-def _baseGetRequest(type: getReqType | None, params: dict | None) -> dict:
-    reqRes = rq.get(config.API_PATH + type, params)
+def _baseGetRequest(type: getReqType | None, params: dict | None) -> dict | None:
+    try:
+        reqRes = rq.get(config.API_PATH + type, params)
+    except Exception:
+        return None # TODO logging
     deserRes = json.loads(reqRes.content)  # десериализованный результат
     return deserRes
 
