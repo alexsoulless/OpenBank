@@ -9,7 +9,11 @@ class Currency(int):
     pass
 
 
-class User:
+class Entry:
+    def __str__(self):
+        return str(self.__dict__)
+
+class User(Entry):
     def __init__(
         self,
         id: int,
@@ -26,11 +30,8 @@ class User:
         self.isBanned = isBanned
         self.isOrg = isOrg
 
-    def __str__(self):
-        return str(self.__dict__)
 
-
-class Transaction:
+class Transaction(Entry):
     def __init__(
         self,
         Id: int,
@@ -46,14 +47,14 @@ class Transaction:
         self.sum = sum
 
 
-class TaxPayment:
+class TaxPayment(Entry):
     def __init__(self, Id: int, userId: int, taxId: int):
         self.Id = Id
         self.userId = userId
         self.taxId = taxId
 
 
-class Tax:
+class Tax(Entry):
     def __init__(self, Id: int, sum: Currency, datetime: datetime, name: str):
         self.Id = Id
         self.sum = sum
@@ -61,7 +62,7 @@ class Tax:
         self.name = name
 
 
-class CreditRequest:
+class CreditRequest(Entry):
     """
     Статус кредитной заявки
     1 - отправлена

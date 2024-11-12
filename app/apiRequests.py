@@ -1,6 +1,7 @@
 import config
 import requests as rq
 import json
+from datetime import datetime
 from classes import User, Transaction, Currency, Tax
 
 # В этом файле будут все запросы от тг бота к бэкенду на FastAPI
@@ -40,12 +41,12 @@ def _baseGetRequest(type: getReqType | None, params: dict | None) -> dict | None
     try:
         reqRes = rq.get(config.API_PATH + type, params)
     except Exception:
-        return None # TODO logging
+        return None  # TODO logging
     deserRes = json.loads(reqRes.content)  # десериализованный результат
     return deserRes
 
 
-def pingReq(q: int) -> dict:
+def pingReq() -> dict:
     return _baseGetRequest(getReqType.ping)
 
 
@@ -119,13 +120,89 @@ def getTransactionsPage(username: str, i: int) -> tuple[Transaction] | None:
     pass
 
 
-def getTaxes() -> Tax | None:
+def getTaxes() -> tuple[Tax] | None:
     """Возвращает всю информацию о существующих налогах.
 
     Returns:
-        Tax | None: налог, если запрос успешен, иначе None
+        list[Tax] | None: налог, если запрос успешен, иначе None
     """
     pass
+
+
+def getTax(taxId: int) -> Tax | None:
+    """Возвращает налог по Id
+
+    Args:
+        taxId (int): Id налога
+
+    Returns:
+        Tax | None: возвращает объект Tax, либо None при ошибке
+    """
+    pass
+
+
+def newTax() -> int | None:
+    """Создаёт новый налог в системе
+
+    Returns:
+        int|None: Id нового налога или None, если неудачно
+    """
+    pass
+
+
+def editTax(
+    taxId: int, newDateTime: datetime = None, newSum: int = None, newName: str = None
+) -> int:
+    """Запрос на изменение налога
+
+    Args:
+        taxId (int): Id налога, который редактируем
+        newDateTime (datetime, optional): новое датавремя, когда налог должен быть выплачен. Defaults to None.
+        newSum (int, optional): Новая сумма налога. Defaults to None.
+        newName (str, optional): Новое название налога. Defaults to None.
+
+    Returns:
+        int: Код выхода. 0 - успешно, 1 - нет
+    """
+    pass
+
+
+def getTaxStats(taxId: int) -> tuple[Tax, int, int]:
+    """Возвращает налог и статистику сбора по нему
+
+    Args:
+        taxId (int): Id налога
+
+    Returns:
+        tuple[Tax, int]: налог; кол-во человек, заплативших налог; кол-во налогоплательщиков
+    """
+    pass
+
+
+def getTaxDefaulters(taxId: int) -> tuple[tuple[int, str, str]]:
+    """Возвращает список должников по определённому налогу
+
+    Args:
+        taxId (int): Id налога
+
+    Returns:
+        tuple[tuple[int, str, str]]: кортеж, каждый элемент - (id, username, FIO) участника, который не заплатил данный налог
+    """
+    pass
+
+
+def newTaxPayment(taxId: int, userId: int) -> int:
+    """Создаёт новую выплату по налогу. Используется в том случае, если участник оплатил налог наличной валютой.
+
+    Args:
+        taxId (int)
+        userId (int)
+
+    Returns:
+        int: Код выхода. 0 - успешно, 1 - нет
+    """
+    pass
+
 
 if __name__ == "__main__":
     print(getUser(username="AlexSsoulless"))

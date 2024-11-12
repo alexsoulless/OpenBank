@@ -2,7 +2,7 @@ import mysql.connector
 from mysql.connector import pooling
 import mysql.connector.cursor
 from config import DB_PASSWORD, DB_USER, DB_HOST, DB_NAME, DB_PORT
-from classes import User, Transaction, Tax, TaxPayment, Currency, 
+from classes import User, Transaction, Tax, TaxPayment, Currency
 
 
 def connectToDB()-> bool:
@@ -127,7 +127,7 @@ if __name__ == "__main__":
 
     res = ""
     try:
-        res = getUser(pool, FIO="Абрамович Александр Владимирович")
+        res = getUser(pool, id=3)
     except Exception as e:
         print(e)
     print(res)
