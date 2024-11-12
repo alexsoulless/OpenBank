@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 import dbRequests as dbr
 
-
+# some edits
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Жизненный цикл приложения. Всё до yield выполняется при запуске программы, всё что после - при завершении работы
