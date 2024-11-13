@@ -6,7 +6,7 @@ from config import TELEGRAM_API_KEY
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, Filters, CallbackQueryHandler
 
-# add some code
+# add some usefull code
 
 # Файл с именами администраторов
 ADMINS_FILE = 'admins.txt'
