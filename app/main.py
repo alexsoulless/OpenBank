@@ -30,6 +30,6 @@ def ping():
 @app.get("/getUser/")
 async def getUser(
     id: int | None = None, username: str | None = None, FIO: str | None = None
-):
+) -> User:
     global pool
     return dbr.getUser(pool, id, username, FIO)

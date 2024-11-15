@@ -5,7 +5,7 @@ from config import DB_PASSWORD, DB_USER, DB_HOST, DB_NAME, DB_PORT
 from classes import User, Transaction, Tax, TaxPayment, Currency
 
 
-def connectToDB()-> bool:
+def connectToDB() -> bool:
     global pool
     pool = connectionPool()
     if pool is not None:
@@ -24,7 +24,7 @@ def connectionPool() -> pooling.MySQLConnectionPool | None:
         "user": DB_USER,
         "password": DB_PASSWORD,
         "database": DB_NAME,
-        "port" : DB_PORT
+        "port": DB_PORT,
     }
     try:
         connection_pool = pooling.MySQLConnectionPool(
@@ -56,7 +56,7 @@ def getUser(
     id: int | None = None,
     username: str | None = None,
     FIO: str | None = None,
-) -> dict | None:
+) -> User | None:
     """Возвращает всю информацию о пользователе по id или username или ФИО. ВАЖНО! Использовать только с 1 из критериев отбора.
 
     Args:
@@ -66,18 +66,7 @@ def getUser(
         FIO (str | None, optional): ФИО пользователя. Defaults to None.
 
     Returns:
-        dict | None: Все данные о пользователе в формате словаря:
-        {
-            "id": id,
-            "username": username,
-            "FIO": FIO,
-            "balance": balance,
-            "isBanned": isBanned,
-            "isOrg": isOrg
-        }
-        Если пользователя не нашлось, словарь пустой.
-
-        При ошибке выполнения функции возвращает None (напр. передано несколько критериев)
+        User | None: Возвращается найденного пользователя, либо None.
     """
     if [id, username, FIO].count(None) != 2:
         return None
@@ -100,24 +89,24 @@ WHERE {} = {}
     try:
         res = next(cursor)
     except Exception:
-        return {}
+        return None
 
     cursor.close()
     conn.close()
 
     if res:
         id, username, FIO, balance, isBanned, isOrg = res
-        return {
-            "id": id,
-            "username": username,
-            "FIO": FIO,
-            "balance": balance,
-            "isBanned": isBanned,
-            "isOrg": isOrg,
-        }
+        return User(
+            id,
+            username,
+            FIO,
+            balance,
+            isBanned,
+            isOrg,
+        )
     else:
-        return {}
-    
+        return None
+
 
 if __name__ == "__main__":
     pool = connectionPool()
