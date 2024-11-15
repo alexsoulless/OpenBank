@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 import dbRequests as dbr
+from classes import User
 
 
 @asynccontextmanager
