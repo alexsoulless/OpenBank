@@ -4,40 +4,30 @@ import json
 from datetime import datetime
 from classes import User, Transaction, Currency, Tax
 
-# В этом файле будут все запросы от тг бота к бэкенду на FastAPI
-# Пиши сюда запросы в следущем виде:
-
-
-def requestTemplate(value: str, a: int) -> int:
-    """тут пиши docstring в таком формате. Их можно генерировать автоматически с помощью дополения autoDocstring в VSCode
-    Args:
-            value (str): _description_
-            a (int): _description_
-
-    Returns:
-            int: _description_
-    """
-    print(f"Был вызван requestTemplate с аргументом {value}")
-    return a
-
-
-# В последующем я буду реализовывать все запросы, которые ты сюда напишешь
-# Имя функции должно отражать её суть, напр getHistoryPage() - запрос на получение страницы истории транзакций
-
 
 class ReqType:
     ping = "ping/"
-
-
-class getReqType(ReqType):
     getUser = "getUser/"
+    findUser = "findUser/"
+    userTransaction = "userTransaction/"
+    getTransactionsPage = "getTransactionsPage/"
+    getTaxes = "getTaxes/"
+    getTax = "getTax/"
+    newTax = "newTax/"
+    editTax = "editTax/"
+    getTaxStats = "getTaxStats/"
+    getTaxDefaulters = "getTaxDefaulters/"
+    newTaxPayment = "newTaxPayment/"
+    setUserBalance = "setUserBalance/"
+    changeUserStatus = "changeUserStatus/"
+    postCreditRequest = "postCreditRequest/"
+    forcedTransaction = "forcedTransaction/"
+    getCreditRequests = "getCreditRequests/"
+    getCreditRequest = "getCreditRequest/"
+    setCreditRequestStatus = "setCreditRequestStatus/"
 
 
-class postReqType(ReqType):
-    pass
-
-
-def _baseGetRequest(type: getReqType | None, params: dict | None) -> dict | None:
+def baseRequest(type: ReqType | None, params: dict | None) -> dict | None:
     try:
         reqRes = rq.get(config.API_PATH + type, params)
     except Exception:
@@ -47,7 +37,7 @@ def _baseGetRequest(type: getReqType | None, params: dict | None) -> dict | None
 
 
 def pingReq() -> dict:
-    return _baseGetRequest(getReqType.ping)
+    return baseRequest(ReqType.ping)
 
 
 def getUser(
@@ -66,8 +56,8 @@ def getUser(
         User | None: Возвращает объект пользователя если пользователь нашёлся.
         При ошибке выполнения функции возвращает None (напр. передано несколько критериев)
     """
-    res = _baseGetRequest(
-        getReqType.getUser,
+    res = baseRequest(
+        ReqType.getUser,
         {
             "id": id,
             "username": username,
@@ -80,7 +70,7 @@ def getUser(
 
 
 def findUser(pattern: str) -> tuple[tuple[int, str, str]] | tuple | None:
-    """Поиск имён пользователей и ФИО в базе данных, похожих на паттерн. Длина патерна должна быть больше 4 символов.
+    """Поиск имён пользователей и ФИО в базе данных, похожих на паттерн. Длина патерна должна быть больше 3 символов.
 
     Args:
         pattern (str): паттерн, по которому будет произведен поиск
@@ -88,10 +78,15 @@ def findUser(pattern: str) -> tuple[tuple[int, str, str]] | tuple | None:
     Returns:
         tuple[tuple[int, str, str]] | None: Возвращает id, username, FIO найденных пользователей в виде ((id1, username1, FIO1), (id2, username2, FIO2), ...) при удачном запросе. Если при запросе возникла ошибка, вернёт None.
     """
-    pass
+    if len(pattern) < 4:
+        return None
+    res = baseRequest(ReqType.findUser, {"pattern": pattern})
+    if res:
+        return res
+    return None
 
 
-def UserTransaction(sender: str, recipient: str, sum: Currency) -> int:
+def userTransaction(sender: str, recipient: str, sum: Currency) -> int:
     """Транзакция между 2 пользователями
 
     Args:
@@ -124,7 +119,7 @@ def getTaxes() -> tuple[Tax] | None:
     """Возвращает всю информацию о существующих налогах.
 
     Returns:
-        list[Tax] | None: налог, если запрос успешен, иначе None
+        tuple[Tax] | None: налог, если запрос успешен, иначе None
     """
     pass
 
@@ -201,6 +196,34 @@ def newTaxPayment(taxId: int, userId: int) -> int:
     Returns:
         int: Код выхода. 0 - успешно, 1 - нет
     """
+    pass
+
+
+def setUserBalance(username, newBalance):
+    pass
+
+
+def changeUserStatus(username):
+    pass
+
+
+def postCreditRequest():
+    pass
+
+
+def forcedTransaction():
+    pass
+
+
+def getCreditRequests():
+    pass
+
+
+def getCreditRequest():
+    pass
+
+
+def setCreditRequestStatus(id, status):
     pass
 
 

@@ -33,3 +33,4 @@ async def getUser(
 ) -> User:
     global pool
     return dbr.getUser(pool, id, username, FIO)
+
