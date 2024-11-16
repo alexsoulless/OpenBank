@@ -56,7 +56,7 @@ def getUser(
     id: int | None = None,
     username: str | None = None,
     FIO: str | None = None,
-) -> User | None:
+) -> dict | None:
     """Возвращает всю информацию о пользователе по id или username или ФИО. ВАЖНО! Использовать только с 1 из критериев отбора.
 
     Args:
@@ -86,26 +86,56 @@ WHERE {} = {}
         values = ("FIO", f"'{FIO}'")
 
     cursor.execute(query.format(*values))
-    try:
-        res = next(cursor)
-    except Exception:
-        return None
+    res = [i for i in cursor]
 
     cursor.close()
     conn.close()
 
     if res:
         id, username, FIO, balance, isBanned, isOrg = res
-        return User(
-            id,
-            username,
-            FIO,
-            balance,
-            isBanned,
-            isOrg,
-        )
+        return {
+            "id": id,
+            "username": username,
+            "FIO": FIO,
+            "balance": balance,
+            "isBanned": isBanned,
+            "isOrg": isOrg,
+        }
     else:
         return None
+
+
+def isRu(s : str) -> bool:
+    """Определяет русская ли 1 буква в строке по unicode символа
+    """
+    return ord(s[0]) in range(1040, 1104)
+
+
+def findUser(
+    pool: pooling.MySQLConnectionPool, pattern: str
+) -> list[dict] | None:
+
+    conn = getConnection(pool)
+    cursor = getCursor(conn)
+
+    if isRu(pattern):
+        query = """
+SELECT * FROM users
+where FIO like %s;
+"""
+    else:
+        query = """
+SELECT * FROM users
+where username like %s;
+"""
+    pattern = f"%{pattern}%"
+    cursor.execute(query, [pattern])
+    res = [User(*i).__dict__ for i in cursor]
+
+    cursor.close()
+    conn.close()
+
+    return res
 
 
 if __name__ == "__main__":
@@ -114,9 +144,6 @@ if __name__ == "__main__":
         print("error on db connect")
         exit(1)
 
-    res = ""
-    try:
-        res = getUser(pool, id=3)
-    except Exception as e:
-        print(e)
-    print(res)
+    res = findUser(pool, "д")
+    for i in res:
+        print(i)

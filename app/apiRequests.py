@@ -69,18 +69,21 @@ def getUser(
     return None
 
 
-def findUser(pattern: str) -> tuple[tuple[int, str, str]] | tuple | None:
+def findUser(pattern: str) -> list[User] | None:
     """Поиск имён пользователей и ФИО в базе данных, похожих на паттерн. Длина патерна должна быть больше 3 символов.
 
     Args:
         pattern (str): паттерн, по которому будет произведен поиск
 
     Returns:
-        tuple[tuple[int, str, str]] | None: Возвращает id, username, FIO найденных пользователей в виде ((id1, username1, FIO1), (id2, username2, FIO2), ...) при удачном запросе. Если при запросе возникла ошибка, вернёт None.
+        list[User] | None: Возвращает id, username, FIO найденных пользователей в виде ((id1, username1, FIO1), (id2, username2, FIO2), ...) при удачном запросе. Если при запросе возникла ошибка, вернёт None.
     """
-    if len(pattern) < 4:
+    if len(pattern) < 3:
         return None
-    res = baseRequest(ReqType.findUser, {"pattern": pattern})
+    finded = baseRequest(ReqType.findUser, {"pattern": pattern})
+    res = []
+    for i in finded:
+        res.append(User(**i))
     if res:
         return res
     return None
@@ -228,4 +231,7 @@ def setCreditRequestStatus(id, status):
 
 
 if __name__ == "__main__":
-    print(getUser(username="AlexSsoulless"))
+    r = findUser("лек")
+
+    for i in r:
+        print(i)

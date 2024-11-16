@@ -30,7 +30,17 @@ def ping():
 @app.get("/getUser/")
 async def getUser(
     id: int | None = None, username: str | None = None, FIO: str | None = None
-) -> User:
+) -> dict | None:
     global pool
-    return dbr.getUser(pool, id, username, FIO)
+    res = dbr.getUser(pool, id, username, FIO)
+    if res is not None:
+        return res
+    else:
+        return {"result": None}
 
+
+@app.get("/findUser/")
+async def findUser(pattern: str) -> list[dict]:
+    global pool
+    pattern = pattern.lower()
+    return dbr.findUser(pool, pattern)
