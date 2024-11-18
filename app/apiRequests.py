@@ -7,27 +7,32 @@ from classes import User, Transaction, Currency, Tax
 
 class ReqType:
     ping = "ping/"
-    getUser = "getUser/"
-    findUser = "findUser/"
-    userTransaction = "userTransaction/"
-    getTransactionsPage = "getTransactionsPage/"
-    getTaxes = "getTaxes/"
-    getTax = "getTax/"
-    newTax = "newTax/"
-    editTax = "editTax/"
-    getTaxStats = "getTaxStats/"
-    getTaxDefaulters = "getTaxDefaulters/"
-    newTaxPayment = "newTaxPayment/"
-    setUserBalance = "setUserBalance/"
-    changeUserStatus = "changeUserStatus/"
-    postCreditRequest = "postCreditRequest/"
-    forcedTransaction = "forcedTransaction/"
-    getCreditRequests = "getCreditRequests/"
-    getCreditRequest = "getCreditRequest/"
-    setCreditRequestStatus = "setCreditRequestStatus/"
 
 
-def baseRequest(type: ReqType | None, params: dict | None) -> dict | None:
+class getReqType(ReqType):
+    getUser = "/users"
+    findUser = "/users/find"
+    getTransactionsPage = "/transactions"
+    getTaxes = "/taxes"
+    getTax = "/taxes/{}"
+    getTaxStats = "/taxes/{}/stats"
+    getTaxDefaulters = "/taxes/{}/defaulters"
+    getCreditRequests = "/credits"
+    getCreditRequest = "/credits/{}"
+
+
+class postReqType(ReqType):
+    setUserBalance = "/users/{}"
+    userTransaction = "/transactions"
+    newTax = "/taxes"
+    editTax = "/taxes/{}"
+    newTaxPayment = "/taxes/payments"
+    changeUserStatus = "/users/{}/status"
+    postCreditRequest = "/credits"
+    setCreditRequestStatus = "/credits/{}"
+
+
+def baseGetRequest(type: getReqType | None, params: dict | None) -> dict | None:
     try:
         reqRes = rq.get(config.API_PATH + type, params)
     except Exception:
@@ -36,8 +41,19 @@ def baseRequest(type: ReqType | None, params: dict | None) -> dict | None:
     return deserRes
 
 
+def basePostRequest(type: postReqType | None, params: dict | None) -> dict | None:
+    try:
+        reqRes = rq.post(config.API_PATH + type, params)
+    except Exception:
+        return None  # TODO logging
+    if reqRes.status_code != 200:
+        return None
+    deserRes = json.loads(reqRes.content)  # десериализованный результат
+    return deserRes
+
+
 def pingReq() -> dict:
-    return baseRequest(ReqType.ping)
+    return baseGetRequest(ReqType.ping)
 
 
 def getUser(
@@ -56,8 +72,8 @@ def getUser(
         User | None: Возвращает объект пользователя если пользователь нашёлся.
         При ошибке выполнения функции возвращает None (напр. передано несколько критериев)
     """
-    res = baseRequest(
-        ReqType.getUser,
+    res = baseGetRequest(
+        getReqType.getUser,
         {
             "id": id,
             "username": username,
@@ -80,7 +96,7 @@ def findUser(pattern: str) -> list[User] | None:
     """
     if len(pattern) < 3:
         return None
-    finded = baseRequest(ReqType.findUser, {"pattern": pattern})
+    finded = baseGetRequest(getReqType.findUser, {"pattern": pattern})
     res = []
     for i in finded:
         res.append(User(**i))
@@ -89,7 +105,9 @@ def findUser(pattern: str) -> list[User] | None:
     return None
 
 
-def userTransaction(sender: str, recipient: str, sum: Currency) -> int:
+def postTransaction(
+    sender: str, recipient: str, sum: Currency, forced: bool = False
+) -> int:
     """Транзакция между 2 пользователями
 
     Args:
@@ -211,10 +229,6 @@ def changeUserStatus(username):
 
 
 def postCreditRequest():
-    pass
-
-
-def forcedTransaction():
     pass
 
 

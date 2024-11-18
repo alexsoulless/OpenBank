@@ -28,7 +28,7 @@ def connectionPool() -> pooling.MySQLConnectionPool | None:
     }
     try:
         connection_pool = pooling.MySQLConnectionPool(
-            pool_name="mypool", pool_size=10, pool_reset_session=True, **db_config
+            pool_name="mypool", pool_size=20, pool_reset_session=True, **db_config
         )
         return connection_pool
     except Exception:
@@ -140,10 +140,4 @@ where username like %s;
 
 if __name__ == "__main__":
     pool = connectionPool()
-    if pool is None:
-        print("error on db connect")
-        exit(1)
-
-    res = findUser(pool, "д")
-    for i in res:
-        print(i)
+    
