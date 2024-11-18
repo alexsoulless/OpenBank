@@ -25,21 +25,16 @@ async def newTaxPayment(userId: int, taxId: int):
     pass
 
 
-@router.get("/{id}")
-async def getTax(id: int):
+@router.get("/{taxId}")
+async def getTax(taxId: int):
     pass
 
 
-@router.get("/{id}/stats")
-async def getTaxStats(id: int):
+@router.get("/{taxId}/stats")
+async def getTaxStats(taxId: int):
     pass
 
 
-@router.get("/{id}/defaulters")
-async def getTaxDefaulters(id: int):
-    pass
-
-
-@router.get("/{id}/stats")
-async def getTaxStats(id: int):
+@router.get("/{taxId}/defaulters")
+async def getTaxDefaulters(taxId: int):
     pass

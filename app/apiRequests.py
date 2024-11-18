@@ -22,12 +22,11 @@ class getReqType(ReqType):
 
 
 class postReqType(ReqType):
-    setUserBalance = "/users/{}"
+    setUserStats = "/users/{}"
     userTransaction = "/transactions"
     newTax = "/taxes"
     editTax = "/taxes/{}"
     newTaxPayment = "/taxes/payments"
-    changeUserStatus = "/users/{}/status"
     postCreditRequest = "/credits"
     setCreditRequestStatus = "/credits/{}"
 

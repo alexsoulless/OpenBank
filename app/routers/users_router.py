@@ -1,10 +1,7 @@
 from fastapi import APIRouter
 import dbRequests as dbr
 
-router = APIRouter(
-    prefix="/users",
-    tags=["users"]
-)
+router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get("/")
@@ -17,9 +14,16 @@ async def getUser(
         return res
     else:
         return {"result": None}
-    
 
-@router.get("/find/")
+
+@router.post("/{id}")
+async def setUserStats(
+    id: int, balance: int | None = None, isBanned: bool | None = None
+):
+    pass
+
+
+@router.get("/find")
 async def findUser(pattern: str) -> list[dict]:
     global pool
     pattern = pattern.lower()
