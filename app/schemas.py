@@ -5,13 +5,13 @@ from datetime import datetime
 from classes import User, Transaction, Currency, CreditRequest, Tax, TaxPayment
 
 
-class CurrencyPD(int):
+class CurrencyPD(Currency):
     @classmethod
     def __get_pydantic_core_schema__(
         cls, source_type: Any, handler: GetCoreSchemaHandler
     ) -> CoreSchema:
-        return core_schema.no_info_after_validator_function(cls, handler(str))
-
+        return core_schema.no_info_after_validator_function(cls, handler(int))
+# я не понимаю как, но это работает. если надо поменять базовый тип Currency, надо изменить handler в 13 строчке на нужный тип
 
 class UserSchema(BaseModel, arbitrary_types_allowed=True):
     id: int
