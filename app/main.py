@@ -23,9 +23,7 @@ from routers.taxes_router import router as taxesRouter
 async def lifespan(app: FastAPI):
     # Жизненный цикл приложения. Всё до yield выполняется при запуске программы, всё что после - при завершении работы
     print("===APP SETUP===")
-    global pool
-    pool = dbr.connectionPool()
-    if pool is None:
+    if not dbr.connectToDB():
         print("db connection - failed")
     print("db connection - success")
     yield

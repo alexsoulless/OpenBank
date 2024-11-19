@@ -52,15 +52,13 @@ def getCursor(conn: pooling.PooledMySQLConnection) -> mysql.connector.cursor:
 
 
 def getUser(
-    pool: pooling.MySQLConnectionPool,
     id: int | None = None,
     username: str | None = None,
     FIO: str | None = None,
-) -> dict | None:
+) -> User | None:
     """Возвращает всю информацию о пользователе по id или username или ФИО. ВАЖНО! Использовать только с 1 из критериев отбора.
 
     Args:
-        pool (pooling.MySQLConnectionPool): пул соединений
         id (int | None, optional): ID пользователя. Defaults to None.
         username (str | None, optional): имя пользователя. Defaults to None.
         FIO (str | None, optional): ФИО пользователя. Defaults to None.
@@ -70,6 +68,7 @@ def getUser(
     """
     if [id, username, FIO].count(None) != 2:
         return None
+    global pool
     conn = getConnection(pool)
     cursor = getCursor(conn)
 
@@ -92,29 +91,34 @@ WHERE {} = {}
     conn.close()
 
     if res:
-        id, username, FIO, balance, isBanned, isOrg = res
-        return {
-            "id": id,
-            "username": username,
-            "FIO": FIO,
-            "balance": balance,
-            "isBanned": isBanned,
-            "isOrg": isOrg,
-        }
+        return User(*res[0])
     else:
         return None
 
 
-def isRu(s : str) -> bool:
-    """Определяет русская ли 1 буква в строке по unicode символа
+def setUserStatsid(
+    id: int, balance: int | None = None, isBanned: bool | None = None
+) -> User | None:
+    """Обновляет атрибуты пользователя
+
+    Args:
+        id (int): id пользователя
+        balance (int | None, optional): Новый баланс пользователя. Defaults to None.
+        isBanned (bool | None, optional): заблокирован или нет. Defaults to None.
+
+    Returns:
+        User | None: возвращает экземпляр пользователя с актуальными полями если удачно, иначе None
     """
+    pass
+
+
+def isRu(s: str) -> bool:
+    """Определяет русская ли 1 буква в строке по unicode символа"""
     return ord(s[0]) in range(1040, 1104)
 
 
-def findUser(
-    pool: pooling.MySQLConnectionPool, pattern: str
-) -> list[dict] | None:
-
+def findUser(pattern: str) -> list[User] | None:
+    global pool
     conn = getConnection(pool)
     cursor = getCursor(conn)
 
@@ -130,7 +134,7 @@ where username like %s;
 """
     pattern = f"%{pattern}%"
     cursor.execute(query, [pattern])
-    res = [User(*i).__dict__ for i in cursor]
+    res = [User(*i) for i in cursor]
 
     cursor.close()
     conn.close()
@@ -139,5 +143,7 @@ where username like %s;
 
 
 if __name__ == "__main__":
-    pool = connectionPool()
-    
+    if not connectToDB():
+        raise Exception("Failed connect to DB")
+
+    [print(i) for i in findUser("Дар")]
