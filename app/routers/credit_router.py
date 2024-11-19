@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 import dbRequests as dbr
+from schemas import CreditRequest, CreditRequestSchema
 
 router = APIRouter(
     prefix="/credits",

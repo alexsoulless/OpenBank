@@ -5,7 +5,18 @@ from routers.users_router import router as userRouter
 from routers.credit_router import router as creditRouter
 from routers.transactions_router import router as transactionsRouter
 from routers.taxes_router import router as taxesRouter
-from classes import User
+# from schemas import (
+#     User,
+#     Transaction,
+#     CreditRequest,
+#     Tax,
+#     TaxPayment,
+#     UserSchema,
+#     TransactionSchema,
+#     CreditRequestSchema,
+#     TaxSchema,
+#     TaxPaymentSchema,
+# )
 
 
 @asynccontextmanager
@@ -27,9 +38,9 @@ app.include_router(creditRouter)
 app.include_router(transactionsRouter)
 app.include_router(taxesRouter)
 
+
 @app.get("/ping/")
 def ping():
     return {
         "responce": "pong",
     }
-
