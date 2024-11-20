@@ -2,7 +2,7 @@ import mysql.connector
 from mysql.connector import pooling
 import mysql.connector.cursor
 from config import DB_PASSWORD, DB_USER, DB_HOST, DB_NAME, DB_PORT
-from classes import User, Transaction, Tax, TaxPayment, Currency
+from classes import User, Transaction, Tax, TaxPayment, Currency, CreditRequest
 
 
 def connectToDB() -> bool:
@@ -137,7 +137,7 @@ WHERE id = {id};
     cursor.execute(query)
 
     res = [i for i in cursor]
-    
+
     cursor.close()
     conn.close()
 
@@ -147,13 +147,12 @@ WHERE id = {id};
         return None
 
 
-
 def findUser(pattern: str) -> list[User] | None:
-    
+
     def isRu(s: str) -> bool:
         """Определяет русская ли 1 буква в строке по unicode символа"""
         return ord(s[0]) in range(1040, 1104)
-    
+
     global pool
     conn = getConnection(pool)
     cursor = getCursor(conn)
@@ -178,9 +177,50 @@ where username like %s;
     return res
 
 
+def getCreditRequests() -> list[CreditRequest]:
+    global pool
+    conn = getConnection(pool)
+    cursor = getCursor(conn)
+
+    query = f"""
+SELECT * FROM creditrequest
+"""
+    cursor.execute(query)
+
+    res = [CreditRequest(*i) for i in cursor]
+
+    cursor.close()
+    conn.close()
+
+    return res
+
+
+def getCreditRequest(id: int) -> CreditRequest | None:
+    global pool
+    conn = getConnection(pool)
+    cursor = getCursor(conn)
+
+    query = """
+SELECT * FROM creditrequest
+where id = %s
+"""
+    cursor.execute(query, params=[id])
+
+    res = [i for i in cursor]
+
+    cursor.close()
+    conn.close()
+
+    if res:
+        return CreditRequest(*res[0])
+    else:
+        return None
+
+
 if __name__ == "__main__":
     if not connectToDB():
         raise Exception("Failed connect to DB")
 
-    print(setUserStats(3, balance=12))
+    # print(setUserStats(3, balance=12))
     # print(getUser(3))
+    print(getCreditRequest(3))
