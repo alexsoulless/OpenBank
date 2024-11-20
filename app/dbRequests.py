@@ -96,7 +96,7 @@ WHERE {} = {}
         return None
 
 
-def setUserStatsid(
+def setUserStats(
     id: int, balance: int | None = None, isBanned: bool | None = None
 ) -> User | None:
     """Обновляет атрибуты пользователя
@@ -109,15 +109,51 @@ def setUserStatsid(
     Returns:
         User | None: возвращает экземпляр пользователя с актуальными полями если удачно, иначе None
     """
-    pass
+    global pool
+    conn = getConnection(pool)
+    cursor = getCursor(conn)
 
+    cond = ""
 
-def isRu(s: str) -> bool:
-    """Определяет русская ли 1 буква в строке по unicode символа"""
-    return ord(s[0]) in range(1040, 1104)
+    if balance is not None and isBanned is not None:
+        cond = f"balance = {balance}, isBanned = {isBanned}"
+    elif balance is not None:
+        cond = f"balance = {balance}"
+    elif isBanned is not None:
+        cond = f"isBanned = {isBanned}"
+
+    query = f"""
+UPDATE USERS
+SET {cond}
+WHERE id = {id};
+"""
+    cursor.execute(query)
+    conn.commit()
+
+    query = f"""
+SELECT * FROM users
+WHERE id = {id};
+"""
+    cursor.execute(query)
+
+    res = [i for i in cursor]
+    
+    cursor.close()
+    conn.close()
+
+    if res:
+        return User(*res[0])
+    else:
+        return None
+
 
 
 def findUser(pattern: str) -> list[User] | None:
+    
+    def isRu(s: str) -> bool:
+        """Определяет русская ли 1 буква в строке по unicode символа"""
+        return ord(s[0]) in range(1040, 1104)
+    
     global pool
     conn = getConnection(pool)
     cursor = getCursor(conn)
@@ -146,4 +182,5 @@ if __name__ == "__main__":
     if not connectToDB():
         raise Exception("Failed connect to DB")
 
-    [print(i) for i in findUser("Дар")]
+    print(setUserStats(3, balance=12))
+    # print(getUser(3))

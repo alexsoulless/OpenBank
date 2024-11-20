@@ -16,11 +16,15 @@ async def getUser(
         return None
 
 
-@router.post("/{id}")
+@router.post("/{id}/stats")
 async def setUserStats(
     id: int, balance: int | None = None, isBanned: bool | None = None
 ) -> UserSchema | None:
-    pass
+    res = dbr.setUserStats(id, balance, isBanned)
+    if res is not None:
+        return UserSchema.from_user(res)
+    else:
+        return None
 
 
 @router.get("/find")
