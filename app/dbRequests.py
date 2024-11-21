@@ -299,7 +299,7 @@ def getTaxes() -> list[Tax]:
     conn = getConnection(pool)
     cursor = getCursor(conn)
 
-    query = f"""
+    query = """
 SELECT * FROM taxes
 """
     cursor.execute(query)
@@ -312,7 +312,7 @@ SELECT * FROM taxes
     return res
 
 
-def newTax(name: str, datetime: datetime, sum: Currency) -> Tax:
+def newTax(name: str, datetime: datetime, sum: Currency) -> Tax | None:
     global pool
     conn = getConnection(pool)
     cursor = getCursor(conn)
@@ -340,8 +340,48 @@ WHERE id = %s;
     else:
         return None
 
-def editTax(taxId: int, newDateTime: datetime, newName: str, newSum: int) -> Tax:
-    pass
+
+def editTax(
+    taxId: int, newName: str = None, newDateTime: datetime = None, newSum: int = None
+) -> Tax | None:
+    if [newName, newDateTime, newSum].count(None) == 3:
+        return None
+    global pool
+    conn = getConnection(pool)
+    cursor = getCursor(conn)
+
+    cond = []
+    if newName is not None:
+        cond.append(f"name = '{newName}'")
+    if newDateTime is not None:
+        cond.append(f"datetime = '{newDateTime}'")
+    if newSum is not None:
+        cond.append(f"sum = {newSum}")
+
+    condStr = ", ".join(cond)
+    query = f"""
+UPDATE taxes
+SET {condStr}
+WHERE id = {taxId};
+"""
+    cursor.execute(query)
+    conn.commit()
+
+    query = """
+SELECT * FROM taxes
+WHERE id = %s;
+"""
+    cursor.execute(query, [taxId])
+
+    res = [i for i in cursor]
+
+    cursor.close()
+    conn.close()
+
+    if res:
+        return Tax(*res[0])
+    else:
+        return None
 
 
 # ======transactions funcs======
@@ -353,4 +393,5 @@ if __name__ == "__main__":
     # print(setUserStats(3, balance=12))
     # print(getUser(3))
     # print(postCreditRequest(3, "я хочу питсы", 100, 1))
-    print(setCreditRequestStatus(5, 1))
+    # print(setCreditRequestStatus(5, 1))
+    print(editTax(10, newSum=20))

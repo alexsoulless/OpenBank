@@ -12,7 +12,9 @@ async def getTaxes() -> list[TaxSchema]:
 
 
 @router.post("/")
-async def newTax(name: str, datetime: datetime, sum: CurrencyPD):
+async def newTax(
+    name: str = "", datetime: datetime = "2000-01-01 00:00:00", sum: CurrencyPD = 0
+) -> TaxSchema | None:
     res = dbr.newTax(name, datetime, sum)
     if res is not None:
         return TaxSchema.from_tax(res)
@@ -20,8 +22,13 @@ async def newTax(name: str, datetime: datetime, sum: CurrencyPD):
 
 
 @router.put("/{taxId}")
-async def editTax(taxId: int, newDateTime: datetime, newName: str, newSum: int):
-    pass
+async def editTax(
+    taxId: int, newName: str = None, newDateTime: datetime = None, newSum: int = None
+) -> TaxSchema | None:
+    res = dbr.editTax(taxId, newName, newDateTime, newSum)
+    if res is not None:
+        return TaxSchema.from_tax(res)
+    return None
 
 
 @router.post("/payments")
