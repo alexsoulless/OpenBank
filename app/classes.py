@@ -56,7 +56,7 @@ class TaxPayment(Entry):
 
 
 class Tax(Entry):
-    def __init__(self, Id: int, sum: Currency, datetime: datetime, name: str):
+    def __init__(self, Id: int, name: str, datetime: datetime, sum: Currency):
         self.Id = Id
         self.sum = sum
         self.datetime = datetime

@@ -92,11 +92,11 @@ class TaxSchema(BaseModel):
     name: str
 
     def to_tax(self) -> Tax:
-        return Tax(Id=self.Id, sum=self.sum, datetime=self.datetime, name=self.name)
+        return Tax(Id=self.Id, name=self.name, datetime=self.datetime, sum=self.sum)
 
     @classmethod
     def from_tax(cls, tax: Tax):
-        return cls(Id=tax.Id, sum=tax.sum, datetime=tax.datetime, name=tax.name)
+        return cls(Id=tax.Id, name=tax.name, datetime=tax.datetime, sum=tax.sum)
 
 
 class CreditRequestSchema(BaseModel):

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 import dbRequests as dbr
-from schemas import User, UserSchema
+from schemas import UserSchema, CurrencyPD
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -18,7 +18,7 @@ async def getUser(
 
 @router.put("/{id}/stats")
 async def setUserStats(
-    id: int, balance: int | None = None, isBanned: bool | None = None
+    id: int, balance: CurrencyPD | None = None, isBanned: bool | None = None
 ) -> UserSchema | None:
     res = dbr.setUserStats(id, balance, isBanned)
     if res is not None:

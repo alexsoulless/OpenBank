@@ -5,20 +5,8 @@ from routers.users_router import router as userRouter
 from routers.credit_router import router as creditRouter
 from routers.transactions_router import router as transactionsRouter
 from routers.taxes_router import router as taxesRouter
-# from schemas import (
-#     User,
-#     Transaction,
-#     CreditRequest,
-#     Tax,
-#     TaxPayment,
-#     UserSchema,
-#     TransactionSchema,
-#     CreditRequestSchema,
-#     TaxSchema,
-#     TaxPaymentSchema,
-# )
 
-
+    
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Жизненный цикл приложения. Всё до yield выполняется при запуске программы, всё что после - при завершении работы

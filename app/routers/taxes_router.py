@@ -1,18 +1,22 @@
 from datetime import datetime
 from fastapi import APIRouter
 import dbRequests as dbr
+from schemas import TaxSchema, TaxPaymentSchema, CurrencyPD
 
 router = APIRouter(prefix="/taxes", tags=["taxes"])
 
 
 @router.get("/")
-async def getTaxes():
-    pass
+async def getTaxes() -> list[TaxSchema]:
+    return [TaxSchema.from_tax(i) for i in dbr.getTaxes()]
 
 
 @router.post("/")
-async def newTax():
-    pass
+async def newTax(name: str, datetime: datetime, sum: CurrencyPD):
+    res = dbr.newTax(name, datetime, sum)
+    if res is not None:
+        return TaxSchema.from_tax(res)
+    return None
 
 
 @router.put("/{taxId}")

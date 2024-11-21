@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 import dbRequests as dbr
-from schemas import CreditRequest, CreditRequestSchema, CurrencyPD
+from schemas import CreditRequestSchema, CurrencyPD
 
 router = APIRouter(prefix="/credits", tags=["credits"])
 

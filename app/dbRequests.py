@@ -3,6 +3,10 @@ from mysql.connector import pooling
 import mysql.connector.cursor
 from config import DB_PASSWORD, DB_USER, DB_HOST, DB_NAME, DB_PORT
 from classes import User, Transaction, Tax, TaxPayment, Currency, CreditRequest
+from datetime import datetime
+
+
+# ======DB funcs======
 
 
 def connectToDB() -> bool:
@@ -51,6 +55,9 @@ def getCursor(conn: pooling.PooledMySQLConnection) -> mysql.connector.cursor:
     return conn.cursor(buffered=True)
 
 
+# ======User funcs======
+
+
 def getUser(
     id: int | None = None,
     username: str | None = None,
@@ -97,7 +104,7 @@ WHERE {} = {}
 
 
 def setUserStats(
-    id: int, balance: int | None = None, isBanned: bool | None = None
+    id: int, balance: Currency | None = None, isBanned: bool | None = None
 ) -> User | None:
     """Обновляет атрибуты пользователя
 
@@ -175,6 +182,9 @@ where username like %s;
     conn.close()
 
     return res
+
+
+# ======Credits funcs======
 
 
 def getCreditRequests() -> list[CreditRequest]:
@@ -281,6 +291,60 @@ WHERE id = %s;
         return None
 
 
+# ======taxes funcs======
+
+
+def getTaxes() -> list[Tax]:
+    global pool
+    conn = getConnection(pool)
+    cursor = getCursor(conn)
+
+    query = f"""
+SELECT * FROM taxes
+"""
+    cursor.execute(query)
+
+    res = [Tax(*i) for i in cursor]
+
+    cursor.close()
+    conn.close()
+
+    return res
+
+
+def newTax(name: str, datetime: datetime, sum: Currency) -> Tax:
+    global pool
+    conn = getConnection(pool)
+    cursor = getCursor(conn)
+
+    query = """
+INSERT INTO taxes(name, datetime, sum) 
+VALUES (%s, %s, %s); 
+"""
+    cursor.execute(query, [name, datetime, sum])
+    conn.commit()
+
+    query = """
+SELECT * FROM taxes
+WHERE id = %s;
+"""
+    cursor.execute(query, [cursor.lastrowid])
+
+    res = [i for i in cursor]
+
+    cursor.close()
+    conn.close()
+
+    if res:
+        return Tax(*res[0])
+    else:
+        return None
+
+def editTax(taxId: int, newDateTime: datetime, newName: str, newSum: int) -> Tax:
+    pass
+
+
+# ======transactions funcs======
 
 if __name__ == "__main__":
     if not connectToDB():
