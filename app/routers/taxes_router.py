@@ -15,7 +15,7 @@ async def newTax():
     pass
 
 
-@router.post("/{taxId}")
+@router.put("/{taxId}")
 async def editTax(taxId: int, newDateTime: datetime, newName: str, newSum: int):
     pass
 

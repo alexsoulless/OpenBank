@@ -9,7 +9,7 @@ class ReqType:
     ping = "ping/"
 
 
-class getReqType(ReqType):
+class GetReqType(ReqType):
     getUser = "/users"
     findUser = "/users/find"
     getTransactionsPage = "/transactions"
@@ -21,9 +21,9 @@ class getReqType(ReqType):
     getCreditRequest = "/credits/{}"
 
 
-class postReqType(ReqType):
+class PostReqType(ReqType):
     setUserStats = "/users/{}/stats"
-    userTransaction = "/transactions"
+    postTransaction = "/transactions"
     newTax = "/taxes"
     editTax = "/taxes/{}"
     newTaxPayment = "/taxes/payments"
@@ -31,7 +31,7 @@ class postReqType(ReqType):
     setCreditRequestStatus = "/credits/{}"
 
 
-def baseGetRequest(type: getReqType | None, params: dict | None) -> dict | None:
+def baseGetRequest(type: GetReqType | None, params: dict | None) -> dict | None:
     try:
         reqRes = rq.get(config.API_PATH + type, params)
     except Exception:
@@ -40,7 +40,7 @@ def baseGetRequest(type: getReqType | None, params: dict | None) -> dict | None:
     return deserRes
 
 
-def basePostRequest(type: postReqType | None, params: dict | None) -> dict | None:
+def basePostRequest(type: PostReqType | None, params: dict | None) -> dict | None:
     try:
         reqRes = rq.post(config.API_PATH + type, params)
     except Exception:
@@ -72,7 +72,7 @@ def getUser(
         При ошибке выполнения функции возвращает None (напр. передано несколько критериев)
     """
     res = baseGetRequest(
-        getReqType.getUser,
+        GetReqType.getUser,
         {
             "id": id,
             "username": username,
@@ -95,7 +95,7 @@ def findUser(pattern: str) -> list[User] | None:
     """
     if len(pattern) < 3:
         return None
-    finded = baseGetRequest(getReqType.findUser, {"pattern": pattern})
+    finded = baseGetRequest(GetReqType.findUser, {"pattern": pattern})
     res = []
     for i in finded:
         res.append(User(**i))

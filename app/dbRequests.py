@@ -147,7 +147,7 @@ WHERE id = {id};
         return None
 
 
-def findUser(pattern: str) -> list[User] | None:
+def findUser(pattern: str) -> list[User]:
 
     def isRu(s: str) -> bool:
         """Определяет русская ли 1 буква в строке по unicode символа"""
@@ -217,10 +217,44 @@ where id = %s
         return None
 
 
+def postCreditRequest(
+    userId: int,
+    purpose: str,
+    sum: Currency,
+    status: int,
+):
+    global pool
+    conn = getConnection(pool)
+    cursor = getCursor(conn)
+
+    query = """
+INSERT INTO creditrequest(userId, purpose, sum, status) 
+VALUES (%s, %s, %s, %s); 
+"""
+    cursor.execute(query, [userId, purpose, sum, status])
+    conn.commit()
+
+    query = """
+SELECT * FROM creditrequest
+WHERE id = %s;
+"""
+    cursor.execute(query, [cursor.lastrowid])
+
+    res = [i for i in cursor]
+
+    cursor.close()
+    conn.close()
+
+    if res:
+        return CreditRequest(*res[0])
+    else:
+        return None
+
+
 if __name__ == "__main__":
     if not connectToDB():
         raise Exception("Failed connect to DB")
 
     # print(setUserStats(3, balance=12))
     # print(getUser(3))
-    print(getCreditRequest(3))
+    print(postCreditRequest(3, "я хочу питсы", 100, 1))

@@ -16,7 +16,7 @@ async def getUser(
         return None
 
 
-@router.post("/{id}/stats")
+@router.put("/{id}/stats")
 async def setUserStats(
     id: int, balance: int | None = None, isBanned: bool | None = None
 ) -> UserSchema | None:
