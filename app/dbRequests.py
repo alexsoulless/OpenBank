@@ -192,7 +192,7 @@ def getCreditRequests() -> list[CreditRequest]:
     conn = getConnection(pool)
     cursor = getCursor(conn)
 
-    query = f"""
+    query = """
 SELECT * FROM creditrequest
 """
     cursor.execute(query)
@@ -384,14 +384,65 @@ WHERE id = %s;
         return None
 
 
+def newTaxPayment(userId: int, taxId: int) -> TaxPayment | None:
+    global pool
+    conn = getConnection(pool)
+    cursor = getCursor(conn)
+
+    query = """
+INSERT INTO taxespayment(userId, taxId) 
+VALUES (%s, %s); 
+"""
+    cursor.execute(query, [userId, taxId])
+    conn.commit()
+
+    query = """
+SELECT * FROM taxespayment
+WHERE id = %s;
+"""
+    cursor.execute(query, [cursor.lastrowid])
+
+    res = [i for i in cursor]
+
+    cursor.close()
+    conn.close()
+
+    if res:
+        return TaxPayment(*res[0])
+    else:
+        return None
+
+
+def getTax(taxId: int) -> Tax | None:
+    global pool
+    conn = getConnection(pool)
+    cursor = getCursor(conn)
+
+    query = """
+SELECT * FROM taxes
+WHERE id = %s
+"""
+    cursor.execute(query, [taxId])
+
+    res = [i for i in cursor]
+
+    cursor.close()
+    conn.close()
+
+    if res:
+        return Tax(*res[0])
+    else:
+        return None
+
+
+def getTaxStats(taxId: int):
+    pass
+
+
 # ======transactions funcs======
 
 if __name__ == "__main__":
     if not connectToDB():
         raise Exception("Failed connect to DB")
 
-    # print(setUserStats(3, balance=12))
-    # print(getUser(3))
-    # print(postCreditRequest(3, "я хочу питсы", 100, 1))
-    # print(setCreditRequestStatus(5, 1))
-    print(editTax(10, newSum=20))
+    print(getTax(7))

@@ -32,13 +32,19 @@ async def editTax(
 
 
 @router.post("/payments")
-async def newTaxPayment(userId: int, taxId: int):
-    pass
+async def newTaxPayment(userId: int, taxId: int) -> TaxPaymentSchema | None:
+    res = dbr.newTaxPayment(userId, taxId)
+    if res is not None:
+        return TaxPaymentSchema.from_tax_payment(res)
+    return None
 
 
 @router.get("/{taxId}")
 async def getTax(taxId: int):
-    pass
+    res = dbr.getTax(taxId)
+    if res is not None:
+        return TaxSchema.from_tax(res)
+    return None
 
 
 @router.get("/{taxId}/stats")
