@@ -251,10 +251,42 @@ WHERE id = %s;
         return None
 
 
+def setCreditRequestStatus(id: int, newStatus: int) -> CreditRequest | None:
+    global pool
+    conn = getConnection(pool)
+    cursor = getCursor(conn)
+
+    query = """
+UPDATE creditrequest
+SET status = %s
+WHERE id = %s;
+"""
+    cursor.execute(query, [newStatus, id])
+    conn.commit()
+
+    query = """
+SELECT * FROM creditrequest
+WHERE id = %s;
+"""
+    cursor.execute(query, [id])
+
+    res = [i for i in cursor]
+
+    cursor.close()
+    conn.close()
+
+    if res:
+        return CreditRequest(*res[0])
+    else:
+        return None
+
+
+
 if __name__ == "__main__":
     if not connectToDB():
         raise Exception("Failed connect to DB")
 
     # print(setUserStats(3, balance=12))
     # print(getUser(3))
-    print(postCreditRequest(3, "я хочу питсы", 100, 1))
+    # print(postCreditRequest(3, "я хочу питсы", 100, 1))
+    print(setCreditRequestStatus(5, 1))

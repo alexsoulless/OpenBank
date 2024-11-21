@@ -32,5 +32,8 @@ async def getCreditRequest(id: int) -> CreditRequestSchema | None:
 
 
 @router.put("/{id}")
-async def setCreditRequestStatus(id: int, newStatus: int):
-    pass
+async def setCreditRequestStatus(id: int, newStatus: int) -> CreditRequestSchema | None:
+    res = dbr.setCreditRequestStatus(id, newStatus)
+    if res is not None:
+        return CreditRequestSchema.from_credit_request(res)
+    return None
