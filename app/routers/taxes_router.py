@@ -6,12 +6,12 @@ from schemas import TaxSchema, TaxPaymentSchema, CurrencyPD, UserSchema
 router = APIRouter(prefix="/taxes", tags=["taxes"])
 
 
-@router.get("/")
+@router.get("")
 async def getTaxes() -> list[TaxSchema]:
     return [TaxSchema.from_tax(i) for i in dbr.getTaxes()]
 
 
-@router.post("/")
+@router.post("")
 async def newTax(
     name: str = "", datetime: datetime = "2000-01-01 00:00:00", sum: CurrencyPD = 0
 ) -> TaxSchema | None:

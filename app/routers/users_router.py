@@ -5,7 +5,7 @@ from schemas import UserSchema, CurrencyPD
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.get("/")
+@router.get("")
 async def getUser(
     id: int | None = None, username: str | None = None, FIO: str | None = None
 ) -> UserSchema | None:

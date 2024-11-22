@@ -5,12 +5,12 @@ from schemas import CreditRequestSchema, CurrencyPD
 router = APIRouter(prefix="/credits", tags=["credits"])
 
 
-@router.get("/")
+@router.get("")
 async def getCreditRequests() -> list[CreditRequestSchema]:
     return [CreditRequestSchema.from_credit_request(i) for i in dbr.getCreditRequests()]
 
 
-@router.post("/")
+@router.post("")
 async def postCreditRequest(
     userId: int,
     purpose: str,
