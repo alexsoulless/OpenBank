@@ -1,7 +1,7 @@
 from datetime import datetime
 from fastapi import APIRouter
 import dbRequests as dbr
-from schemas import TaxSchema, TaxPaymentSchema, CurrencyPD
+from schemas import TaxSchema, TaxPaymentSchema, CurrencyPD, UserSchema
 
 router = APIRouter(prefix="/taxes", tags=["taxes"])
 
@@ -49,9 +49,9 @@ async def getTax(taxId: int):
 
 @router.get("/{taxId}/stats")
 async def getTaxStats(taxId: int):
-    pass
+    return dbr.getTaxStats(taxId)
 
 
 @router.get("/{taxId}/defaulters")
-async def getTaxDefaulters(taxId: int):
-    pass
+async def getTaxDefaulters(taxId: int) -> list[UserSchema]:
+    return [UserSchema.from_user(i) for i in dbr.getTaxDefaulters(taxId)]

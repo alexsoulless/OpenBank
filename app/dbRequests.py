@@ -435,8 +435,77 @@ WHERE id = %s
         return None
 
 
-def getTaxStats(taxId: int):
-    pass
+def getTaxStats(taxId: int) -> dict:
+    """Статистика сбор налога. ВНИМАНИЕ! Если будет передан taxId несуществующего налога, запрос вернёт список всех пользователей.
+
+    Args:
+        taxId (int): id налога
+
+    Returns:
+        tuple[int, int]: возвращает кортеж где первое число - число участников, оплативших налог, второе - общее число налогоплательщиков
+    """
+
+    global pool
+    conn = getConnection(pool)
+    cursor = getCursor(conn)
+
+    query = """
+SELECT 
+    COUNT(tp.userId) AS paid_users,
+    COUNT(u.id) AS total_users
+FROM 
+    users AS u
+LEFT JOIN 
+    (SELECT * FROM taxespayment WHERE taxId = %s) AS tp ON tp.userId = u.id
+WHERE 
+    u.isOrg = False;
+    """
+    cursor.execute(query, [taxId])
+    res = [i for i in cursor][0]
+
+    cursor.close()
+    conn.close()
+
+    return {
+        "taxId": taxId,
+        "paid": res[0],
+        "total": res[1],
+    }
+
+
+def getTaxDefaulters(taxId: int) -> list[User]:
+    """Функция возвращает список пользователей (подлежащих оплате налога), которые не оплатили налог taxId.
+    ВНИМАНИЕ! Если будет передан taxId несуществующего налога, запрос вернёт список всех пользователей.
+
+    Args:
+        taxId (int): id налога
+
+    Returns:
+        list[User]: списпок пользователей
+    """
+
+    global pool
+    conn = getConnection(pool)
+    cursor = getCursor(conn)
+
+    query = """
+SELECT 
+    u.id, u.username, u.FIO, u.balance, u.isBanned, u.isOrg 
+FROM 
+    users AS u
+LEFT JOIN 
+    (SELECT * FROM taxespayment WHERE taxId = %s) AS tp ON tp.userId = u.id
+WHERE 
+    tp.userId is NULL AND u.isOrg = False;
+    """
+
+    cursor.execute(query, [taxId])
+    res = [User(*i) for i in cursor]
+
+    cursor.close()
+    conn.close()
+
+    return res
 
 
 # ======transactions funcs======
@@ -445,4 +514,4 @@ if __name__ == "__main__":
     if not connectToDB():
         raise Exception("Failed connect to DB")
 
-    print(getTax(7))
+    r = getTaxStats(7)
