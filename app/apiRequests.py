@@ -1,8 +1,11 @@
-import config
+from config import API_IP, API_PORT
 import requests as rq
 import json
+from decimal import Decimal
 from datetime import datetime
-from classes import User, Transaction, Currency, Tax
+from classes import User, Transaction, Tax
+
+API_PATH = f"http://{API_IP}:{API_PORT}"
 
 
 class ReqType(str):
@@ -37,7 +40,7 @@ def baseGetRequest(
     queryParams: dict | None = None,
 ) -> dict | None:
     try:
-        reqRes = rq.get(config.API_PATH + path.format(pathParams), queryParams)
+        reqRes = rq.get(API_PATH + path.format(pathParams), queryParams)
     except Exception:
         return None  # TODO logging
     if reqRes.status_code != 200:
@@ -52,7 +55,7 @@ def basePostRequest(
     queryParams: dict | None = None,
 ) -> dict | None:
     try:
-        reqRes = rq.post(config.API_PATH + path.format(pathParams), queryParams)
+        reqRes = rq.post(API_PATH + path.format(pathParams), queryParams)
     except Exception:
         return None  # TODO logging
     deserRes = json.loads(reqRes.content)  # десериализованный результат
@@ -218,7 +221,7 @@ def setCreditRequestStatus(id, status):
 
 
 def postTransaction(
-    sender: str, recipient: str, sum: Currency, forced: bool = False
+    sender: str, recipient: str, sum: Decimal, forced: bool = False
 ) -> int:
     """Транзакция между 2 пользователями. Если на счету отправителя недостаточно средств, транзакция будет отменена. Принудитетльная транзакция игнорирует это ограничения, но счёт отправителя может стать отрицательным.
 

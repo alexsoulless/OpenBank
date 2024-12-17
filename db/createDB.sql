@@ -1,60 +1,73 @@
 -- show databases;
 
-create database OpenBank;
-use OpenBank;
+CREATE DATABASE OpenBank_ver02;
+USE OpenBank_ver02;
 
 CREATE TABLE users (
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(64) NOT NULL UNIQUE,
     FIO VARCHAR(64) NOT NULL,
-    balance INT DEFAULT 0,
-    isBanned BOOLEAN DEFAULT FALSE,
-    isOrg BOOLEAN DEFAULT FALSE
-);
-
+    balance DECIMAL(10, 2) DEFAULT 0.00,
+    is_banned BOOLEAN DEFAULT FALSE,
+    is_org BOOLEAN DEFAULT FALSE
+) COMMENT 'Таблица для хранения информации о пользователях';
 
 CREATE TABLE transactions (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    `from` INT,
-    `to` INT,
-    `datetime` DATETIME NOT NULL,
-    sum INT NOT NULL,
-    FOREIGN KEY (`from`) REFERENCES users (id),
-    FOREIGN KEY (`to`) REFERENCES users (id),
-    INDEX (`from`),
-    INDEX (`to`)
-);
+    sender_id INT,
+    recipient_id INT,
+    transaction_datetime DATETIME NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (sender_id) REFERENCES users (id),
+    FOREIGN KEY (recipient_id) REFERENCES users (id),
+    INDEX (sender_id),
+    INDEX (recipient_id)
+) COMMENT 'Таблица для хранения транзакций между пользователями';
 
-CREATE TABLE creditRequest (
+CREATE TABLE credit_requests (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    userId INT NOT NULL,
-    purpose VARCHAR(128) NOT NULL,
-    `status` INT NOT NULL,
-    FOREIGN KEY (userId) REFERENCES users (id),
-    INDEX (userId)
-);
+    user_id INT NOT NULL,
+    purpose VARCHAR(128),
+    status INT NOT NULL DEFAULT 0,
+    amount DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    INDEX (user_id)
+) COMMENT 'Таблица для хранения запросов на кредит';
 
 CREATE TABLE taxes (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    `name` VARCHAR(32) NOT NULL,
-    `datetime` DATETIME NOT NULL,
-    sum INT NOT NULL
-);
+    name VARCHAR(32) NOT NULL,
+    due_datetime DATETIME NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL
+) COMMENT 'Таблица для хранения информации о налогах';
 
-CREATE TABLE taxesPayment (
+CREATE TABLE tax_payments (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    userId INT NOT NULL,
-    taxId INT NOT NULL,
-    FOREIGN KEY (userId) REFERENCES users (id),
-    FOREIGN KEY (taxId) REFERENCES taxes (id),
-    INDEX (userId),
-    INDEX (taxId)
-);
+    user_id INT NOT NULL,
+    tax_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (tax_id) REFERENCES taxes (id),
+    INDEX (user_id),
+    INDEX (tax_id)
+) COMMENT 'Таблица для хранения платежей по налогам';
 
+CREATE TABLE credit_payments (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    credit_request_id INT NOT NULL,
+    user_id INT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    payment_datetime DATETIME NOT NULL,
+    is_paid BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (credit_request_id) REFERENCES credit_requests(id),
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    INDEX (credit_request_id),
+    INDEX (user_id)
+) COMMENT 'Таблица для хранения платежей по кредитам';
 
--- select * from users;
--- select * from creditrequest;
+-- select * from users; 
+-- select * from credit_requests;
 -- select * from taxes;
--- select * from taxespayment;
+-- select * from tax_payments;
 -- select * from transactions;
--- drop database openbank; 
+-- select * from credit_payments;
+-- drop database openbank;

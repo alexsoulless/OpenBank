@@ -1,57 +1,75 @@
 from datetime import datetime
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, status, Query, Path
 import dbRequests as dbr
-from schemas import TaxSchema, TaxPaymentSchema, CurrencyPD, UserSchema
+from schemas import TaxSchema, TaxPaymentSchema, Decimal, UserSchema
 
 router = APIRouter(prefix="/taxes", tags=["taxes"])
 
 
 @router.get("")
-async def getTaxes() -> list[TaxSchema]:
-    return [TaxSchema.from_tax(i) for i in dbr.getTaxes()]
+async def get_taxes() -> list[TaxSchema]:
+    taxes = await dbr.get_taxes()
+    if not taxes:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No taxes found")
+    return [TaxSchema.from_tax(i) for i in taxes]
 
 
 @router.post("")
-async def newTax(
-    name: str = "", datetime: datetime = "2000-01-01 00:00:00", sum: CurrencyPD = 0
-) -> TaxSchema | None:
-    res = dbr.newTax(name, datetime, sum)
-    if res is not None:
-        return TaxSchema.from_tax(res)
-    return None
+async def post_tax(
+    name: str = Query(), 
+    due_datetime: datetime = Query("2000-01-01T00:00:00", description="YYYY-MM-DDTHH:mm:ss"), 
+    amount: Decimal = Query(0, gt = 0, lt=100000)
+) -> TaxSchema:
+    res = await dbr.new_tax(name, due_datetime, amount)
+    if res is None:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Tax creation failed")
+    return TaxSchema.from_tax(res)
 
 
-@router.put("/{taxId}")
-async def editTax(
-    taxId: int, newName: str = None, newDateTime: datetime = None, newSum: int = None
-) -> TaxSchema | None:
-    res = dbr.editTax(taxId, newName, newDateTime, newSum)
-    if res is not None:
-        return TaxSchema.from_tax(res)
-    return None
+@router.patch("/{tax_id}")
+async def edit_tax(
+    tax_id: int = Path(..., ge=1),
+    new_name: str = Query(),
+    new_datetime: datetime = Query("2000-01-01T00:00:00", description="YYYY-MM-DDTHH:mm:ss"),
+    new_amount: Decimal = Query(0, gt = 0, lt=100000),
+) -> TaxSchema:
+    res = await dbr.edit_tax(tax_id, new_name, new_datetime, new_amount)
+    if res is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tax not found")
+    return TaxSchema.from_tax(res)
 
 
 @router.post("/payments")
-async def newTaxPayment(userId: int, taxId: int) -> TaxPaymentSchema | None:
-    res = dbr.newTaxPayment(userId, taxId)
-    if res is not None:
-        return TaxPaymentSchema.from_tax_payment(res)
-    return None
+async def new_tax_payment(
+    user_id: int = Query(..., ge=1), 
+    tax_id: int = Query(..., ge=1)
+) -> TaxPaymentSchema:
+    res = await dbr.new_tax_payment(user_id, tax_id)
+    if res is None:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Payment creation failed")
+    return TaxPaymentSchema.from_tax_payment(res)
 
 
-@router.get("/{taxId}")
-async def getTax(taxId: int):
-    res = dbr.getTax(taxId)
-    if res is not None:
-        return TaxSchema.from_tax(res)
-    return None
+@router.get("/{tax_id}")
+async def get_tax(tax_id: int = Path(..., ge=1)) -> TaxSchema:
+    res = await dbr.get_tax(tax_id)
+    if res is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tax not found")
+    return TaxSchema.from_tax(res)
 
 
-@router.get("/{taxId}/stats")
-async def getTaxStats(taxId: int):
-    return dbr.getTaxStats(taxId)
+@router.get("/{tax_id}/stats")
+async def get_tax_stats(tax_id: int = Path(..., ge=1)):
+    stats = await dbr.get_tax_stats(tax_id)
+    if stats is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tax not found")
+    return stats 
 
 
-@router.get("/{taxId}/defaulters")
-async def getTaxDefaulters(taxId: int) -> list[UserSchema]:
-    return [UserSchema.from_user(i) for i in dbr.getTaxDefaulters(taxId)]
+@router.get("/{tax_id}/defaulters")
+async def get_tax_defaulters(tax_id: int = Path(..., ge=1)) -> list[UserSchema]:
+    defaulters = await dbr.get_tax_defaulters(tax_id)
+    if defaulters is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tax not found")
+    return [UserSchema.from_user(i) for i in defaulters]
+    
